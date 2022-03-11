@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "asciidoctor.asciidoctor-vscode",
+        "formulahendry.auto-close-tag",
+        "formulahendry.auto-rename-tag",
+        "waderyan.gitblame",
+        "esbenp.prettier-vscode",
+        "fallenmax.styled-components-extractor",
+        "jpoissonnier.vscode-styled-components"
+    ]
+}
