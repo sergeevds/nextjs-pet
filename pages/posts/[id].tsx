@@ -1,8 +1,15 @@
+import { GetStaticPaths, GetStaticProps } from 'next'
 import Head from 'next/head'
+import { ParsedUrlQuery } from 'querystring'
+
 import Date from '../../components/date'
-import Layout from '../../components/layout'
-import { getAllPostIds, getPostData } from '../../lib/posts'
+import Layout from '../../components/Layout'
+import { getAllPostIds, getPostData, IPost } from '../../lib/posts'
 import utilStyles from '../../styles/utils.module.css'
+
+export interface IPostPageProps {
+    post: IPost
+}
 
 export default function Post({ post }) {
     return (
@@ -10,7 +17,7 @@ export default function Post({ post }) {
             <Head>
                 <title>{post.title}</title>
             </Head>
-            <Layout home={false}>
+            <Layout>
                 <article>
                     <h1 className={utilStyles.headingXl}>{post.title}</h1>
                     <div className={utilStyles.lightText}>
@@ -23,8 +30,12 @@ export default function Post({ post }) {
     )
 }
 
-export async function getStaticProps({ params }) {
-    const post = await getPostData(params.id)
+interface PostPageParams extends ParsedUrlQuery {
+    id: string
+}
+
+export const getStaticProps: GetStaticProps<IPostPageProps, PostPageParams> = async ({ params }) => {
+    const post = await getPostData(params!.id)
     return {
         props: {
             post,
@@ -32,9 +43,9 @@ export async function getStaticProps({ params }) {
     }
 }
 
-export async function getStaticPaths() {
+export const getStaticPaths: GetStaticPaths = async () => {
     const paths = getAllPostIds()
-    console.table(paths)
+    // console.table(paths)
     return {
         paths,
         fallback: false,

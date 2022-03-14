@@ -6,10 +6,16 @@ import html from 'remark-html'
 
 const postsDirectory = path.join(process.cwd(), 'posts')
 
-export function getSortedPostsData() {
+export interface IPost {
+    id: string
+    date: Date
+    [key: string]: any
+}
+
+export function getSortedPostsData(): IPost[] {
     // Get file names under /posts
-    const fileNames = fs.readdirSync(postsDirectory)
-    const allPostsData = fileNames.map((fileName) => {
+    const fileNames: string[] = fs.readdirSync(postsDirectory)
+    const allPostsData: IPost[] = fileNames.map((fileName) => {
         // Remove ".md" from file name to get id
         const id = fileName.replace(/\.md$/, '')
 
@@ -24,7 +30,7 @@ export function getSortedPostsData() {
         return {
             id,
             ...matterResult.data,
-        }
+        } as IPost
     })
     // Sort posts by date
     return allPostsData.sort(({ date: a }, { date: b }) => {
@@ -38,22 +44,23 @@ export function getSortedPostsData() {
     })
 }
 
-export function getAllPostIds() {
+// Returns an array that looks like this:
+// [
+//   {
+//     params: {
+//       id: 'ssg-ssr'
+//     }
+//   },
+//   {
+//     params: {
+//       id: 'pre-rendering'
+//     }
+//   }
+// ]
+
+export function getAllPostIds(): { params: { id: string } }[] {
     const fileNames = fs.readdirSync(postsDirectory)
 
-    // Returns an array that looks like this:
-    // [
-    //   {
-    //     params: {
-    //       id: 'ssg-ssr'
-    //     }
-    //   },
-    //   {
-    //     params: {
-    //       id: 'pre-rendering'
-    //     }
-    //   }
-    // ]
     return fileNames.map((fileName) => {
         return {
             params: {
@@ -63,7 +70,7 @@ export function getAllPostIds() {
     })
 }
 
-export async function getPostData(id) {
+export async function getPostData(id: string): Promise<IPost> {
     const fullPath = path.join(postsDirectory, `${id}.md`)
     const fileContents = fs.readFileSync(fullPath, 'utf8')
 
@@ -78,6 +85,6 @@ export async function getPostData(id) {
     return {
         id,
         contentHtml,
-        ...matterResult.data,
+        ...(matterResult.data as { date: Date; [key: string]: any }),
     }
 }
