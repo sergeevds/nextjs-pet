@@ -1,1 +1,3 @@
-This is a starter template for [Learn Next.js](https://nextjs.org/learn).
+# Comparison | React Query vs SWR vs Apollo vs RTK Query
+
+https://react-query.tanstack.com/comparison
