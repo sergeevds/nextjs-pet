@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 import styles from './header.module.css'
-import utilStyles from '../styles/utils.module.css'
+import utilStyles from '../../styles/utils.module.css'
 import { HeroImage } from './styled/HeroImage'
 import { LayoutProps } from '../Layout'
 

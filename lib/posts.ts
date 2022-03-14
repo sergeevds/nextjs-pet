@@ -3,13 +3,17 @@ import path from 'path'
 import matter from 'gray-matter'
 import { remark } from 'remark'
 import html from 'remark-html'
+import { Post } from '@prisma/client'
 
 const postsDirectory = path.join(process.cwd(), 'posts')
 
 export interface IPost {
-    id: string
-    date: Date
-    [key: string]: any
+    id?: string
+    title: string
+    slug: string
+    content: string
+    createdDate?: Date
+    // [key: string]: any
 }
 
 export function getSortedPostsData(): IPost[] {
@@ -33,7 +37,7 @@ export function getSortedPostsData(): IPost[] {
         } as IPost
     })
     // Sort posts by date
-    return allPostsData.sort(({ date: a }, { date: b }) => {
+    return allPostsData.sort(({ createdDate: a }, { createdDate: b }) => {
         if (a < b) {
             return 1
         } else if (a > b) {
@@ -48,30 +52,30 @@ export function getSortedPostsData(): IPost[] {
 // [
 //   {
 //     params: {
-//       id: 'ssg-ssr'
+//       slug: 'ssg-ssr'
 //     }
 //   },
 //   {
 //     params: {
-//       id: 'pre-rendering'
+//       slug: 'pre-rendering'
 //     }
 //   }
 // ]
 
-export function getAllPostIds(): { params: { id: string } }[] {
+export function getAllPostSlugs(): { params: { slug: string } }[] {
     const fileNames = fs.readdirSync(postsDirectory)
 
     return fileNames.map((fileName) => {
         return {
             params: {
-                id: fileName.replace(/\.md$/, ''),
+                slug: fileName.replace(/\.md$/, ''),
             },
         }
     })
 }
 
-export async function getPostData(id: string): Promise<IPost> {
-    const fullPath = path.join(postsDirectory, `${id}.md`)
+export async function getPostData(slug: string): Promise<IPost> {
+    const fullPath = path.join(postsDirectory, `${slug}.md`)
     const fileContents = fs.readFileSync(fullPath, 'utf8')
 
     // Use gray-matter to parse the post metadata section
@@ -79,12 +83,14 @@ export async function getPostData(id: string): Promise<IPost> {
 
     // Use remark to convert markdown into HTML string
     const processedContent = await remark().use(html).process(matterResult.content)
-    const contentHtml = processedContent.toString()
+    const content = processedContent.toString()
 
     // Combine the data with the id and contentHtml
     return {
-        id,
-        contentHtml,
-        ...(matterResult.data as { date: Date; [key: string]: any }),
+        slug,
+        content,
+        title: matterResult.data.title,
     }
 }
+
+export default getPostData

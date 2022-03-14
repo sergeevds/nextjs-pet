@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import styles from '.footer.module.css'
+import styles from './footer.module.css'
 import { LayoutProps } from '../Layout'
 
 export interface FooterProps extends Pick<LayoutProps, 'home'> {}
